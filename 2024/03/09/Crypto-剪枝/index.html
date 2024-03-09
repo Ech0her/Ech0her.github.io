@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css" integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js" integrity="sha384-y23I5Q6l+B6vatafAwxRu/0oK/79VlbSz7Q9aiSZUvyWYIYsd+qj+o24G5ZU2zJz" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.1.1">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha256-wiz7ZSCn/btzhjKDQBms9Hx4sSeUYsDrTLg7roPstac=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"ech0her.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.19.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="简单记录一下目前接触到的 Crypto 剪枝算法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Crypto-剪枝">
+<meta property="og:url" content="https://ech0her.github.io/2024/03/09/Crypto-%E5%89%AA%E6%9E%9D/index.html">
+<meta property="og:site_name" content="Ech0">
+<meta property="og:description" content="简单记录一下目前接触到的 Crypto 剪枝算法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-03-09T11:48:16.000Z">
+<meta property="article:modified_time" content="2024-03-09T14:11:40.771Z">
+<meta property="article:author" content="Ech0">
+<meta property="article:tag" content="剪枝算法">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://ech0her.github.io/2024/03/09/Crypto-%E5%89%AA%E6%9E%9D/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://ech0her.github.io/2024/03/09/Crypto-%E5%89%AA%E6%9E%9D/","path":"2024/03/09/Crypto-剪枝/","title":"Crypto-剪枝"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Crypto-剪枝 | Ech0</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Ech0</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section">首页</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section">分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section">归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%AA%E6%9E%9D%E7%AE%97%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text"> 剪枝算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%90%9C%E7%B4%A2%E6%96%B9%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text"> 搜索方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%AA%E6%9E%9D%E6%9D%A1%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text"> 剪枝条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9D%9F%E6%9D%A1%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text"> 结束条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E4%BE%8B%E5%AD%90"><span class="nav-number">5.</span> <span class="nav-text"> 具体例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E5%B7%B2%E7%9F%A5-poplus-q"><span class="nav-number">5.1.</span> <span class="nav-text"> （1）已知  p⊕qp\oplus qp⊕q</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E5%B7%B2%E7%9F%A5-p-oplus-qkbits"><span class="nav-number">5.2.</span> <span class="nav-text"> （2）已知 $ p \oplus (q&gt;&gt;kbits) $</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E5%B7%B2%E7%9F%A5-p-oplus-qkbits-%E4%BD%86%E5%89%8Dkbits%E4%BD%8D%E6%9C%AA%E7%9F%A5"><span class="nav-number">5.3.</span> <span class="nav-text"> （3）已知 $ p \oplus (q&gt;&gt;kbits) $ 但前kbits位未知</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ech0"
+      src="/images/avatar.gif">
+  <p class="site-author-name" itemprop="name">Ech0</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ech0her.github.io/2024/03/09/Crypto-%E5%89%AA%E6%9E%9D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Ech0">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ech0">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Crypto-剪枝 | Ech0">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Crypto-剪枝
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-03-09 19:48:16 / 修改时间：22:11:40" itemprop="dateCreated datePublished" datetime="2024-03-09T19:48:16+08:00">2024-03-09</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>简单记录一下目前接触到的 Crypto 剪枝算法。</p>
+<span id="more"></span>
+<h2 id="剪枝算法"><a class="markdownIt-Anchor" href="#剪枝算法"></a> 剪枝算法</h2>
+<blockquote>
+<p>剪枝算法，形象地说，就是通过某些判断，剪掉一些错误的枝条，从而加快搜索速度的算法。在数据结构中学过，搜索算法一般是基于两种方法 深度优先 DFS 和广度优先 BFS ）来进行的，本文主要介绍的是基于深度搜索的剪枝算法。</p>
+</blockquote>
+<h2 id="搜索方式"><a class="markdownIt-Anchor" href="#搜索方式"></a> 搜索方式</h2>
+<blockquote>
+<p>一般可以采取首尾剪枝。</p>
+</blockquote>
+<h2 id="剪枝条件"><a class="markdownIt-Anchor" href="#剪枝条件"></a> 剪枝条件</h2>
+<blockquote>
+<p>需要明确剪枝的条件，把错误的树枝剪掉，把可能正确的树枝留下。</p>
+</blockquote>
+<h2 id="结束条件"><a class="markdownIt-Anchor" href="#结束条件"></a> 结束条件</h2>
+<blockquote>
+<p>知道找到我们需要的正确答案之后，搜索就可以结束了。</p>
+</blockquote>
+<h2 id="具体例子"><a class="markdownIt-Anchor" href="#具体例子"></a> 具体例子</h2>
+<p>ps：以下例子都是基于大整数分解问题和异或运算的。</p>
+<h3 id="1已知-poplus-q"><a class="markdownIt-Anchor" href="#1已知-poplus-q"></a> （1）已知  <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>⊕</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">p\oplus q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7777700000000001em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⊕</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span></span></span></span></h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.Util.number <span class="keyword">import</span> *</span><br><span class="line">p = getPrime(<span class="number">128</span>)</span><br><span class="line">q = getPrime(<span class="number">128</span>)</span><br><span class="line">n = p*q</span><br><span class="line">xor = p^q</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;n = <span class="subst">&#123;n&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;xor = <span class="subst">&#123;xor&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#n = 81273634095521392491945168120330007101677085824054016784875224305683560308213</span></span><br><span class="line"><span class="comment">#xor = 55012774068906519160740720236510369652</span></span><br></pre></td></tr></table></figure>
+<p>已知条件：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>x</mi><mi>o</mi><mi>r</mi><mo>=</mo><mi>p</mi><mo>⊕</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">xor = p\oplus q
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">x</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.7777700000000001em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⊕</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>n</mi><mo>=</mo><mi>p</mi><mo>∗</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">n = p*q
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.6597200000000001em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span></span></span></span></span></p>
+<p>搜索方式：</p>
+<ul>
+<li>从高位向低位搜索</li>
+<li>若xor当前位为1，则可能为两种情况：p为1，q为0 或者 p为0，q为1；反之xor当前位为0，则p为1，q为1 或者 p为0，q为0.</li>
+</ul>
+<p>剪枝条件：</p>
+<ul>
+<li>将p和q剩下位全部填充为1，需要满足 p*q &gt; n</li>
+<li>将p和q剩下位全部填充为0，需要满足 p*q &lt; n</li>
+</ul>
+<p>结束条件：</p>
+<ul>
+<li>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>p</mi><mo>∗</mo><mi>q</mi><mo>=</mo><mi>n</mi><mtext> 或者 </mtext><mi>n</mi><mtext> </mtext><mi>m</mi><mi>o</mi><mi>d</mi><mtext> </mtext><mi>p</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">  p*q = n \ 或者\ n\ mod \ p = 0
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6597200000000001em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">n</span><span class="mspace"> </span><span class="mord cjk_fallback">或</span><span class="mord cjk_fallback">者</span><span class="mspace"> </span><span class="mord mathnormal">n</span><span class="mspace"> </span><span class="mord mathnormal">m</span><span class="mord mathnormal">o</span><span class="mord mathnormal">d</span><span class="mspace"> </span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span></span></p>
+</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">n = <span class="number">81273634095521392491945168120330007101677085824054016784875224305683560308213</span></span><br><span class="line">xor = <span class="number">55012774068906519160740720236510369652</span></span><br><span class="line">pbits = <span class="number">128</span></span><br><span class="line">ph = <span class="string">&#x27;&#x27;</span></span><br><span class="line">qh = <span class="string">&#x27;&#x27;</span></span><br><span class="line">xor = <span class="built_in">str</span>(<span class="built_in">bin</span>(xor)[<span class="number">2</span>:]).zfill(pbits)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find</span>(<span class="params">ph,qh</span>):</span><br><span class="line">    l0 = <span class="built_in">len</span>(ph)</span><br><span class="line">    l1 = <span class="built_in">len</span>(qh)</span><br><span class="line">    tmp0 = ph + <span class="string">&#x27;0&#x27;</span> * (pbits-l0)</span><br><span class="line">    tmp1 = ph + <span class="string">&#x27;1&#x27;</span> * (pbits-l0)</span><br><span class="line">    tmq0 = qh + <span class="string">&#x27;0&#x27;</span> * (pbits-l1)</span><br><span class="line">    tmq1 = qh + <span class="string">&#x27;1&#x27;</span> * (pbits-l1)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">int</span>(tmp0,<span class="number">2</span>) * <span class="built_in">int</span>(tmq0,<span class="number">2</span>) &gt; n:<span class="comment">#剪枝条件1</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">int</span>(tmp1,<span class="number">2</span>) * <span class="built_in">int</span>(tmq1,<span class="number">2</span>) &lt; n:<span class="comment">#剪枝条件2</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> l0 == pbits:<span class="comment">#结束条件</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">int</span>(ph,<span class="number">2</span>) * <span class="built_in">int</span>(qh,<span class="number">2</span>) == n:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;p = <span class="subst">&#123;<span class="built_in">int</span>(ph,<span class="number">2</span>)&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;q = <span class="subst">&#123;<span class="built_in">int</span>(qh,<span class="number">2</span>)&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">if</span> xor[l1] == <span class="string">&#x27;1&#x27;</span>:</span><br><span class="line">            find(ph+<span class="string">&#x27;0&#x27;</span>,qh+<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">            find(ph + <span class="string">&#x27;1&#x27;</span>,qh+<span class="string">&#x27;0&#x27;</span>) </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            find(ph+<span class="string">&#x27;1&#x27;</span>,qh+<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">            find(ph + <span class="string">&#x27;0&#x27;</span>,qh+<span class="string">&#x27;0&#x27;</span>)    </span><br><span class="line"></span><br><span class="line">find(ph,qh)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#运行结果</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">p = 270451921611135557038833183249275131423</span></span><br><span class="line"><span class="string">q = 300510470073047693263940829088190906731</span></span><br><span class="line"><span class="string">p = 300510470073047693263940829088190906731</span></span><br><span class="line"><span class="string">q = 270451921611135557038833183249275131423</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>ps:基于深度搜索的思想去理解这个代码。</p>
+<h3 id="2已知-p-oplus-qkbits"><a class="markdownIt-Anchor" href="#2已知-p-oplus-qkbits"></a> （2）已知 $ p \oplus (q&gt;&gt;kbits) $</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.Util.number <span class="keyword">import</span> *</span><br><span class="line">p = getPrime(<span class="number">128</span>)</span><br><span class="line">q = getPrime(<span class="number">128</span>)</span><br><span class="line">n = p*q</span><br><span class="line">kbits = <span class="number">16</span></span><br><span class="line">_q = q&gt;&gt;kbits</span><br><span class="line">xor = p^_q</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;n = <span class="subst">&#123;n&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;xor = <span class="subst">&#123;xor&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#n = 64562232639256893416069755621246602817297999377249269503641314167726888737493</span></span><br><span class="line"><span class="comment">#xor = 309280967555048700343199196922406211930</span></span><br></pre></td></tr></table></figure>
+<p>已知条件：</p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>x</mi><mi>o</mi><mi>r</mi><mo>=</mo><mi>p</mi><mo>⊕</mo><mo stretchy="false">(</mo><mi>q</mi><mo>&gt;</mo><mo>&gt;</mo><mi>k</mi><mi>b</mi><mi>i</mi><mi>t</mi><mi>s</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">xor = p\oplus (q&gt;&gt;kbits)
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">x</span><span class="mord mathnormal">o</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.7777700000000001em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⊕</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&gt;</span></span><span class="base"><span class="strut" style="height:0.5782em;vertical-align:-0.0391em;"></span><span class="mrel">&gt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal">b</span><span class="mord mathnormal">i</span><span class="mord mathnormal">t</span><span class="mord mathnormal">s</span><span class="mclose">)</span></span></span></span></span></p>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>n</mi><mo>=</mo><mi>p</mi><mo>∗</mo><mi>q</mi></mrow><annotation encoding="application/x-tex">n = p*q
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathnormal">n</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.6597200000000001em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">q</span></span></span></span></span></p>
+<p>搜索方式：</p>
+<ul>
+<li>从高位向低位搜索</li>
+<li>这种情况，p的高kbits位已知，与xor的高kbits位相同。那搜索就从xor的kbits位开始，即p的第kbits位，q的第1位。</li>
+<li>若xor当前位为1，则可能为两种情况：p为1，q为0 或者 p为0，q为1；反之xor当前位为0，则p为1，q为1 或者 p为0，q为0.（这里的p或者q为1指的都是xor当前位对应的p和q的位置）</li>
+</ul>
+<p>剪枝条件：</p>
+<ul>
+<li>将p和q剩下位全部填充为1，需要满足 p*q &gt; n</li>
+<li>将p和q剩下位全部填充为0，需要满足 p*q &lt; n</li>
+<li>这里要注意把p的已知的高kbits位加上</li>
+</ul>
+<p>结束条件：</p>
+<ul>
+<li>
+<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>n</mi><mtext> </mtext><mi>m</mi><mi>o</mi><mi>d</mi><mtext> </mtext><mi>p</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">  n\ mod \ p = 0
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">n</span><span class="mspace"> </span><span class="mord mathnormal">m</span><span class="mord mathnormal">o</span><span class="mord mathnormal">d</span><span class="mspace"> </span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span></span></p>
+</li>
+<li></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">n = <span class="number">63643664048526756484794345795699229288597054138478072698289292748237001669839</span></span><br><span class="line">xor = <span class="number">188681898001072579822021026951939419279</span></span><br><span class="line">kbits = <span class="number">16</span></span><br><span class="line">pbits = <span class="number">128</span></span><br><span class="line">xor = <span class="built_in">str</span>(<span class="built_in">bin</span>(xor)[<span class="number">2</span>:])</span><br><span class="line">ph = xor[:kbits]</span><br><span class="line">qh = <span class="string">&#x27;&#x27;</span></span><br><span class="line">xor = xor[kbits:]</span><br><span class="line">qh = <span class="string">&#x27;&#x27;</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find</span>(<span class="params">ph,qh</span>):</span><br><span class="line">    l0 = <span class="built_in">len</span>(ph)</span><br><span class="line">    l1 = <span class="built_in">len</span>(qh)</span><br><span class="line">    tmp0 = ph + <span class="string">&#x27;0&#x27;</span> * (pbits-l0)</span><br><span class="line">    tmp1 = ph + <span class="string">&#x27;1&#x27;</span> * (pbits-l0)</span><br><span class="line">    tmq0 = qh + <span class="string">&#x27;0&#x27;</span> * (pbits-l1)</span><br><span class="line">    tmq1 = qh + <span class="string">&#x27;1&#x27;</span> * (pbits-l1)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">int</span>(tmp0,<span class="number">2</span>) * <span class="built_in">int</span>(tmq0,<span class="number">2</span>) &gt; n:<span class="comment">#剪枝条件1</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">int</span>(tmp1,<span class="number">2</span>) * <span class="built_in">int</span>(tmq1,<span class="number">2</span>) &lt; n:<span class="comment">#剪枝条件2</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> l0 == pbits:<span class="comment">#结束条件</span></span><br><span class="line">        <span class="keyword">if</span> n % <span class="built_in">int</span>(ph,<span class="number">2</span>) == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;p = <span class="subst">&#123;<span class="built_in">int</span>(ph,<span class="number">2</span>)&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">if</span> xor[l1] == <span class="string">&#x27;1&#x27;</span>:</span><br><span class="line">            find(ph+<span class="string">&#x27;0&#x27;</span>,qh+<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">            find(ph + <span class="string">&#x27;1&#x27;</span>,qh+<span class="string">&#x27;0&#x27;</span>) </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            find(ph+<span class="string">&#x27;1&#x27;</span>,qh+<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">            find(ph + <span class="string">&#x27;0&#x27;</span>,qh+<span class="string">&#x27;0&#x27;</span>)    </span><br><span class="line">find(ph,qh)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#运行结果</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">p = 188678698133681304596906537936293804297</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+<h3 id="3已知-p-oplus-qkbits-但前kbits位未知"><a class="markdownIt-Anchor" href="#3已知-p-oplus-qkbits-但前kbits位未知"></a> （3）已知 $ p \oplus (q&gt;&gt;kbits) $ 但前kbits位未知</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.Util.number <span class="keyword">import</span> *</span><br><span class="line">p = getPrime(<span class="number">128</span>)</span><br><span class="line">q = getPrime(<span class="number">128</span>)</span><br><span class="line">n = p*q</span><br><span class="line">kbits = <span class="number">16</span></span><br><span class="line">_q = q&gt;&gt;kbits</span><br><span class="line">xor = p^_q</span><br><span class="line">xor = <span class="built_in">int</span>(<span class="built_in">bin</span>(xor)[<span class="number">2</span>:][kbits:],<span class="number">2</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;n = <span class="subst">&#123;n&#125;</span>&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;xor = <span class="subst">&#123;xor&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#n = 67993063298729224384929426280013061841686812014564261424956366758045322225691</span></span><br><span class="line"><span class="comment">#xor = 4614553526345165212539618883307366</span></span><br></pre></td></tr></table></figure>
+<p>和第（2）种情况相比，只是少了p的高kbits，直接爆破，就和第二种情况一样了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">n = <span class="number">67993063298729224384929426280013061841686812014564261424956366758045322225691</span></span><br><span class="line">xor = <span class="number">4614553526345165212539618883307366</span></span><br><span class="line">kbits = <span class="number">16</span></span><br><span class="line">pbits = <span class="number">128</span></span><br><span class="line">xor = <span class="built_in">str</span>(<span class="built_in">bin</span>(xor)[<span class="number">2</span>:])</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find</span>(<span class="params">ph,qh</span>):</span><br><span class="line">    l0 = <span class="built_in">len</span>(ph)</span><br><span class="line">    l1 = <span class="built_in">len</span>(qh)</span><br><span class="line">    tmp0 = ph + <span class="string">&#x27;0&#x27;</span> * (pbits-l0)</span><br><span class="line">    tmp1 = ph + <span class="string">&#x27;1&#x27;</span> * (pbits-l0)</span><br><span class="line">    tmq0 = qh + <span class="string">&#x27;0&#x27;</span> * (pbits-l1)</span><br><span class="line">    tmq1 = qh + <span class="string">&#x27;1&#x27;</span> * (pbits-l1)</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">int</span>(tmp0,<span class="number">2</span>) * <span class="built_in">int</span>(tmq0,<span class="number">2</span>) &gt; n:<span class="comment">#剪枝条件1</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">int</span>(tmp1,<span class="number">2</span>) * <span class="built_in">int</span>(tmq1,<span class="number">2</span>) &lt; n:<span class="comment">#剪枝条件2</span></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> l0 == pbits:<span class="comment">#结束条件</span></span><br><span class="line">        <span class="keyword">if</span> n % <span class="built_in">int</span>(ph,<span class="number">2</span>) == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;p = <span class="subst">&#123;<span class="built_in">int</span>(ph,<span class="number">2</span>)&#125;</span>&#x27;</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">if</span> xor[l1] == <span class="string">&#x27;1&#x27;</span>:</span><br><span class="line">            find(ph+<span class="string">&#x27;0&#x27;</span>,qh+<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">            find(ph + <span class="string">&#x27;1&#x27;</span>,qh+<span class="string">&#x27;0&#x27;</span>) </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            find(ph+<span class="string">&#x27;1&#x27;</span>,qh+<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">            find(ph + <span class="string">&#x27;0&#x27;</span>,qh+<span class="string">&#x27;0&#x27;</span>)    </span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span>  <span class="built_in">range</span>(<span class="number">2</span>**kbits):</span><br><span class="line">    ph = <span class="built_in">bin</span>(i)[<span class="number">2</span>:].zfill(kbits)</span><br><span class="line">    qh = <span class="string">&#x27;&#x27;</span>            </span><br><span class="line">    find(ph,qh)</span><br><span class="line"></span><br><span class="line"><span class="comment">#运行结果</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">p = 252330886747767934000827792522692714557</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span>    </span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+<blockquote>
+<ul>
+<li><strong>本文作者：</strong> Ech0</li>
+<li><strong>本文参考</strong>：<a target="_blank" rel="noopener" href="https://tangcuxiaojikuai.xyz/post/342113ee.html">Crypto趣题-剪枝 | 糖醋小鸡块的blog (tangcuxiaojikuai.xyz)</a></li>
+</ul>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%89%AA%E6%9E%9D%E7%AE%97%E6%B3%95/" rel="tag"># 剪枝算法</a>
+          </div>
+
+        
+
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Ech0</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"all","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
